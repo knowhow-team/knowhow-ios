@@ -18,7 +18,7 @@ struct KnowledgeBaseView: View {
                 .ignoresSafeArea()
             
             VStack(spacing: 0) {
-                // 顶部渐变区域 - 包含Cody logo
+                // 顶部渐变区域 - 包含Cody logo，扩展到灵动岛区域
                 ZStack {
                     LinearGradient(
                         gradient: Gradient(colors: [
@@ -35,7 +35,7 @@ struct KnowledgeBaseView: View {
                         .italic()
                         .foregroundColor(.black)
                 }
-                .frame(height: 120) // 顶部渐变区域高度
+                .frame(height: 160) // 增加高度，扩展到灵动岛区域
                 
                 // 主内容区域 - 白色背景
                 VStack(spacing: 0) {

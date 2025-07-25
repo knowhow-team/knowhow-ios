@@ -8,21 +8,73 @@
 import SwiftUI
 
 struct CommunityView: View {
+    @State private var knowledgeItems: [KnowledgeItem] = []
+    
     var body: some View {
         ZStack {
-            Color(red: 0.96, green: 0.98, blue: 0.96)
+            // 背景色 - 白色，与设计稿一致
+            Color.white
                 .ignoresSafeArea()
             
-            VStack {
-                Text("社区")
-                    .font(.system(size: 32, weight: .bold))
-                    .foregroundColor(.black)
+            VStack(spacing: 0) {
+                // 顶部区域 - 包含Cody标题
+                VStack(spacing: 8) {
+                    // Cody 标题
+                    Text("Cody")
+                        .font(.system(size: 42, weight: .black))
+                        .italic()
+                        .foregroundColor(.black)
+                }
+                .padding(.top, 40)
+                .padding(.bottom, 20)
                 
-                Text("社区功能开发中...")
-                    .font(.system(size: 16))
-                    .foregroundColor(.gray)
+                // 主内容区域
+                ScrollView {
+                    VStack(spacing: 8) {
+                        // 知识卡片列表
+                        LazyVStack(spacing: 8) {
+                            ForEach(knowledgeItems) { item in
+                                KnowledgeCard(item: item)
+                            }
+                        }
+                        .padding(.horizontal, 20)
+                    }
+                    .padding(.top, 8)
+                    .padding(.bottom, 120) // 避免Tab栏遮挡
+                }
+                
+                Spacer()
             }
         }
+        .onAppear {
+            loadKnowledgeItems()
+        }
+    }
+    
+    private func loadKnowledgeItems() {
+        // 模拟数据 - 与知识库界面相同的内容
+        knowledgeItems = [
+            KnowledgeItem(
+                title: "AdventureX",
+                description: "adx 是中国最大的一场黑客松，2025年有871人参加，参与人数众多，氛围热烈！",
+                category: "Adv"
+            ),
+            KnowledgeItem(
+                title: "AdventureX",
+                description: "adx 是中国最大的一场黑客松，2025年有871人参加，参与人数众多，氛围热烈！",
+                category: "Adv"
+            ),
+            KnowledgeItem(
+                title: "AdventureX",
+                description: "adx 是中国最大的一场黑客松，2025年有871人参加，参与人数众多，氛围热烈！",
+                category: "Adv"
+            ),
+            KnowledgeItem(
+                title: "AdventureX",
+                description: "adx 是中国最大的一场黑客松，2025年有871人参加，参与人数众多，氛围热烈！",
+                category: "Adv"
+            )
+        ]
     }
 }
 

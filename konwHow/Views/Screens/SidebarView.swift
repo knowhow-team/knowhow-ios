@@ -9,6 +9,7 @@ import SwiftUI
 
 struct SidebarView: View {
     @Binding var isPresented: Bool
+    @State private var showVoiceRecord = false
     
     var body: some View {
         ZStack {
@@ -43,14 +44,20 @@ struct SidebarView: View {
                 VStack(spacing: 16) {
                     // UI组件信息卡片 - 白色背景，与知识卡片一致
                     VStack(spacing: 12) {
-                        Text("原始语音记录")
-                            .font(.system(size: 16, weight: .medium))
-                            .foregroundColor(.black)
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 16)
-                            .background(Color.white)
-                            .cornerRadius(8)
-                            .shadow(color: Color.black.opacity(0.05), radius: 4, x: 0, y: 1)
+                        // 原始语音记录 - 可点击
+                        Button(action: {
+                            showVoiceRecord = true
+                        }) {
+                            Text("原始语音记录")
+                                .font(.system(size: 16, weight: .medium))
+                                .foregroundColor(.black)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 16)
+                                .background(Color.white)
+                                .cornerRadius(8)
+                                .shadow(color: Color.black.opacity(0.05), radius: 4, x: 0, y: 1)
+                        }
+                        .buttonStyle(PlainButtonStyle())
                         
                         Text("#tag 1")
                             .font(.system(size: 16, weight: .medium))
@@ -87,6 +94,9 @@ struct SidebarView: View {
             }
         }
         .transition(.move(edge: .leading))
+        .fullScreenCover(isPresented: $showVoiceRecord) {
+            VoiceRecordView()
+        }
     }
 }
 
