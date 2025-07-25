@@ -9,6 +9,7 @@ import SwiftUI
 
 struct TabBar: View {
     @Binding var selectedTab: Int
+    @State private var showRecording = false
     
     var body: some View {
         HStack {
@@ -29,9 +30,9 @@ struct TabBar: View {
             
             Spacer()
             
-            // 中央按钮 - 精确匹配设计图，增加浮动效果
+            // 中央按钮 - 录音功能
             Button(action: {
-                // 中央按钮动作
+                showRecording = true
             }) {
                 ZStack {
                     Circle()
@@ -82,6 +83,9 @@ struct TabBar: View {
         .padding(.vertical, 12)
         .background(Color.white)
         .shadow(color: Color.black.opacity(0.1), radius: 8, x: 0, y: -2)
+        .fullScreenCover(isPresented: $showRecording) {
+            RecordingView()
+        }
     }
 }
 
