@@ -59,8 +59,8 @@ struct CanvasKnowledgeGraphView: View {
     
     var body: some View {
         ZStack {
-            // 背景
-            Color(red: 0.96, green: 0.98, blue: 0.96)
+            // 背景 - 白色
+            Color.white
                 .ignoresSafeArea()
             
             // 使用Canvas绘制知识图谱
@@ -102,7 +102,7 @@ struct CanvasKnowledgeGraphView: View {
                 }
             }
             .frame(height: 250)
-            .background(Color(red: 0.96, green: 0.98, blue: 0.96))
+            .background(Color.white)
             .cornerRadius(16)
             .padding(.horizontal, 20)
             .shadow(color: Color.black.opacity(0.05), radius: 8, x: 0, y: 4)

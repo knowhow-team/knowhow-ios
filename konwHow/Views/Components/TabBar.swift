@@ -29,7 +29,7 @@ struct TabBar: View {
             
             Spacer()
             
-            // 中央按钮 - 减少偏移避免遮挡
+            // 中央按钮 - 精确匹配设计图，增加浮动效果
             Button(action: {
                 // 中央按钮动作
             }) {
@@ -37,9 +37,9 @@ struct TabBar: View {
                     Circle()
                         .fill(Color(red: 0.2, green: 0.8, blue: 0.4))
                         .frame(width: 64, height: 64)
-                        .shadow(color: Color(red: 0.2, green: 0.8, blue: 0.4).opacity(0.25), radius: 12, x: 0, y: 6)
+                        .shadow(color: Color.black.opacity(0.2), radius: 10, x: 0, y: 6)
                     
-                    // 使用垂直线条图标来模拟音频波形 - 调整尺寸
+                    // 使用垂直线条图标来模拟音频波形 - 精确匹配设计图
                     HStack(spacing: 2.5) {
                         Rectangle()
                             .fill(Color.white)
@@ -59,7 +59,7 @@ struct TabBar: View {
                     }
                 }
             }
-            .offset(y: -16) // 减少偏移量，从-24改为-16
+            .offset(y: -24) // 增加浮动效果，让按钮更明显地浮在Tab栏上方
             
             Spacer()
             
@@ -81,7 +81,7 @@ struct TabBar: View {
         .padding(.horizontal, 50)
         .padding(.vertical, 12)
         .background(Color.white)
-        .shadow(color: Color.black.opacity(0.08), radius: 12, x: 0, y: -4)
+        .shadow(color: Color.black.opacity(0.1), radius: 8, x: 0, y: -2)
     }
 }
 

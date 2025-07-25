@@ -13,11 +13,11 @@ struct SidebarButton: View {
     var body: some View {
         Button(action: action) {
             Image(systemName: "line.3.horizontal")
-                .font(.system(size: 20, weight: .medium))
+                .font(.system(size: 22, weight: .medium))
                 .foregroundColor(.black)
                 .frame(width: 44, height: 44)
                 .background(Color.white.opacity(0.8))
-                .cornerRadius(8)
+                .cornerRadius(10)
                 .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2)
         }
     }
