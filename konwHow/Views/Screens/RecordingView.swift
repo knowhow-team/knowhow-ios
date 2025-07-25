@@ -16,50 +16,63 @@ struct RecordingView: View {
     
     var body: some View {
         ZStack {
-            // 背景色 - 深紫红色
-            Color(red: 0.4, green: 0.2, blue: 0.4)
+            // 背景色 - 白色，与主页面一致
+            Color.white
                 .ignoresSafeArea()
             
             VStack(spacing: 0) {
-                // 录音网格区域
-                VStack(spacing: 20) {
-                    // 5x5网格小球
-                    LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 12), count: 5), spacing: 12) {
-                        ForEach(0..<25) { index in
-                            Circle()
-                                .fill(getCircleColor(for: index))
-                                .frame(width: 40, height: 40)
+                // 顶部区域 - 包含Cody标题
+                VStack(spacing: 8) {
+                    // Cody 标题
+                    Text("Cody")
+                        .font(.system(size: 42, weight: .black))
+                        .italic()
+                        .foregroundColor(.black)
+                }
+                .padding(.top, 40)
+                .padding(.bottom, 20)
+                
+                // 主内容区域
+                VStack(spacing: 40) {
+                    // 录音网格区域
+                    VStack(spacing: 20) {
+                        // 5x5网格小球
+                        LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 12), count: 5), spacing: 12) {
+                            ForEach(0..<25) { index in
+                                Circle()
+                                    .fill(getCircleColor(for: index))
+                                    .frame(width: 40, height: 40)
+                            }
                         }
+                        .padding(.horizontal, 40)
+                        .padding(.vertical, 40)
+                        .background(
+                            RoundedRectangle(cornerRadius: 16)
+                                .fill(Color(red: 0.96, green: 0.98, blue: 0.96))
+                        )
+                        .padding(.horizontal, 20)
                     }
-                    .padding(.horizontal, 40)
-                    .padding(.vertical, 40)
-                    .background(
-                        RoundedRectangle(cornerRadius: 20)
-                            .fill(Color(red: 0.4, green: 0.2, blue: 0.4))
-                    )
-                    .padding(.horizontal, 20)
-                    
-                    Spacer()
                     
                     // 底部控制区域
                     VStack(spacing: 30) {
                         // 录音时间显示
                         Text(timeString(from: recordingTime))
                             .font(.system(size: 24, weight: .medium))
-                            .foregroundColor(.white)
+                            .foregroundColor(.black)
                         
                         // 停止按钮
                         Button(action: {
                             stopRecording()
                         }) {
                             Circle()
-                                .fill(Color.white)
+                                .fill(Color(red: 0.2, green: 0.8, blue: 0.4))
                                 .frame(width: 80, height: 80)
                                 .overlay(
                                     Image(systemName: "stop.fill")
                                         .font(.system(size: 32))
-                                        .foregroundColor(Color(red: 0.4, green: 0.2, blue: 0.4))
+                                        .foregroundColor(.white)
                                 )
+                                .shadow(color: Color(red: 0.2, green: 0.8, blue: 0.4).opacity(0.3), radius: 8, x: 0, y: 4)
                         }
                         .disabled(!isRecording)
                         
@@ -79,10 +92,11 @@ struct RecordingView: View {
                                                     .font(.system(size: 24, weight: .bold))
                                                     .foregroundColor(.white)
                                             )
+                                            .shadow(color: Color.red.opacity(0.3), radius: 6, x: 0, y: 3)
                                         
                                         Text("丢弃")
                                             .font(.system(size: 14, weight: .medium))
-                                            .foregroundColor(.white)
+                                            .foregroundColor(.black)
                                     }
                                 }
                                 
@@ -92,17 +106,18 @@ struct RecordingView: View {
                                 }) {
                                     VStack(spacing: 8) {
                                         Circle()
-                                            .fill(Color.green)
+                                            .fill(Color(red: 0.2, green: 0.8, blue: 0.4))
                                             .frame(width: 50, height: 50)
                                             .overlay(
                                                 Image(systemName: "checkmark")
                                                     .font(.system(size: 24, weight: .bold))
                                                     .foregroundColor(.white)
                                             )
+                                            .shadow(color: Color(red: 0.2, green: 0.8, blue: 0.4).opacity(0.3), radius: 6, x: 0, y: 3)
                                         
                                         Text("保存")
                                             .font(.system(size: 14, weight: .medium))
-                                            .foregroundColor(.white)
+                                            .foregroundColor(.black)
                                     }
                                 }
                             }
@@ -121,10 +136,11 @@ struct RecordingView: View {
                     }) {
                         Image(systemName: "chevron.left")
                             .font(.system(size: 20, weight: .medium))
-                            .foregroundColor(.white)
+                            .foregroundColor(.black)
                             .frame(width: 44, height: 44)
-                            .background(Color.white.opacity(0.2))
+                            .background(Color.white.opacity(0.9))
                             .cornerRadius(8)
+                            .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2)
                     }
                     .padding(.leading, 20)
                     .padding(.top, 60)
@@ -150,7 +166,7 @@ struct RecordingView: View {
         if progress >= threshold {
             return Color(red: 0.2, green: 0.8, blue: 0.4) // 绿色
         } else {
-            return Color.white // 白色
+            return Color.gray.opacity(0.3) // 浅灰色，与主页面风格一致
         }
     }
     
