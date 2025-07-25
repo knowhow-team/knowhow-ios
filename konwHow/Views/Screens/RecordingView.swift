@@ -9,8 +9,8 @@ import SwiftUI
 
 struct RecordingView: View {
     @Environment(\.dismiss) private var dismiss
+    @StateObject private var speechManager = SpeechRecognitionManager()
     @State private var recordingTime: TimeInterval = 0
-    @State private var isRecording = true
     @State private var showSaveOptions = false
     @State private var timer: Timer?
     
@@ -53,6 +53,50 @@ struct RecordingView: View {
                         .padding(.horizontal, 20)
                     }
                     
+                    // 语音转文字显示区域
+                    VStack(spacing: 12) {
+                        Text("实时转文字")
+                            .font(.system(size: 16, weight: .medium))
+                            .foregroundColor(.black.opacity(0.7))
+                        
+                        ScrollView {
+                            VStack(spacing: 8) {
+                                Text(speechManager.transcribedText.isEmpty ? "正在聆听..." : speechManager.transcribedText)
+                                    .font(.system(size: 16, weight: .regular))
+                                    .foregroundColor(speechManager.transcribedText.isEmpty ? .gray : .black)
+                                    .multilineTextAlignment(.leading)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .padding(.horizontal, 20)
+                                    .padding(.vertical, 16)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 12)
+                                            .fill(Color(red: 0.96, green: 0.98, blue: 0.96))
+                                    )
+                                    .padding(.horizontal, 20)
+                                
+                                // 错误信息显示
+                                if !speechManager.errorMessage.isEmpty {
+                                    Text(speechManager.errorMessage)
+                                        .font(.system(size: 14, weight: .medium))
+                                        .foregroundColor(.red)
+                                        .padding(.horizontal, 20)
+                                }
+                                
+                                // 调试信息
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text("权限状态: \(speechManager.isAuthorized ? "已授权" : "未授权")")
+                                        .font(.system(size: 12))
+                                        .foregroundColor(.gray)
+                                    Text("录音状态: \(speechManager.isRecording ? "录音中" : "已停止")")
+                                        .font(.system(size: 12))
+                                        .foregroundColor(.gray)
+                                }
+                                .padding(.horizontal, 20)
+                            }
+                        }
+                        .frame(maxHeight: 120)
+                    }
+                    
                     // 底部控制区域
                     VStack(spacing: 30) {
                         // 录音时间显示
@@ -62,6 +106,7 @@ struct RecordingView: View {
                         
                         // 停止按钮
                         Button(action: {
+                            print("停止按钮被点击")
                             stopRecording()
                         }) {
                             Circle()
@@ -74,7 +119,45 @@ struct RecordingView: View {
                                 )
                                 .shadow(color: Color(red: 0.2, green: 0.8, blue: 0.4).opacity(0.3), radius: 8, x: 0, y: 4)
                         }
-                        .disabled(!isRecording)
+                        .disabled(!speechManager.isRecording)
+                        
+                        // 如果权限未授权，显示开始录音按钮
+                        if !speechManager.isAuthorized {
+                            Button(action: {
+                                print("手动开始录音按钮被点击")
+                                speechManager.requestSpeechAuthorization()
+                            }) {
+                                Text("开始录音")
+                                    .font(.system(size: 16, weight: .medium))
+                                    .foregroundColor(.white)
+                                    .padding(.horizontal, 20)
+                                    .padding(.vertical, 12)
+                                    .background(Color(red: 0.2, green: 0.8, blue: 0.4))
+                                    .cornerRadius(8)
+                            }
+                        }
+                        
+                        // 调试按钮 - 手动触发录音
+                        Button(action: {
+                            print("调试按钮被点击")
+                            if speechManager.isAuthorized {
+                                speechManager.startRecording()
+                                // 开始计时器
+                                timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { _ in
+                                    recordingTime += 0.1
+                                }
+                            } else {
+                                print("权限未授权，无法开始录音")
+                            }
+                        }) {
+                            Text("调试：手动开始录音")
+                                .font(.system(size: 14, weight: .medium))
+                                .foregroundColor(.blue)
+                                .padding(.horizontal, 16)
+                                .padding(.vertical, 8)
+                                .background(Color.blue.opacity(0.1))
+                                .cornerRadius(6)
+                        }
                         
                         // 保存/丢弃选项
                         if showSaveOptions {
@@ -151,10 +234,29 @@ struct RecordingView: View {
             }
         }
         .onAppear {
+            print("RecordingView appeared")
+            // 确保权限已请求
+            if !speechManager.isAuthorized {
+                speechManager.requestSpeechAuthorization()
+            }
             startRecording()
         }
+        .onChange(of: speechManager.isAuthorized) { newValue in
+            print("权限状态变化: \(newValue)")
+            if newValue && !speechManager.isRecording {
+                // 权限获取后，如果还没开始录音，则开始录音
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    speechManager.startRecording()
+                    // 开始计时器
+                    self.timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { _ in
+                        self.recordingTime += 0.1
+                    }
+                }
+            }
+        }
         .onDisappear {
-            stopTimer()
+            print("RecordingView disappeared")
+            stopRecording()
         }
     }
     
@@ -179,15 +281,25 @@ struct RecordingView: View {
     
     // 开始录音
     private func startRecording() {
-        isRecording = true
-        timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { _ in
-            recordingTime += 0.1
+        print("开始录音...")
+        
+        // 如果权限未授权，先请求权限
+        if !speechManager.isAuthorized {
+            speechManager.requestSpeechAuthorization()
+            // 权限获取后会自动开始录音（通过onChange监听）
+        } else {
+            speechManager.startRecording()
+            // 开始计时器
+            timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { _ in
+                recordingTime += 0.1
+            }
         }
     }
     
     // 停止录音
     private func stopRecording() {
-        isRecording = false
+        print("停止录音...")
+        speechManager.stopRecording()
         stopTimer()
         
         withAnimation(.easeInOut(duration: 0.3)) {
@@ -208,7 +320,8 @@ struct RecordingView: View {
     
     // 保存录音
     private func saveRecording() {
-        // 这里可以添加保存录音的逻辑
+        // 这里可以添加保存录音和文字的逻辑
+        print("保存的语音转文字内容: \(speechManager.getTranscribedText())")
         dismiss()
     }
 }
