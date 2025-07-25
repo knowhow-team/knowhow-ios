@@ -6,6 +6,11 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		00C1D92A2E33411000414CA7 /* ForceSimulation in Frameworks */ = {isa = PBXBuildFile; productRef = 00C1D9292E33411000414CA7 /* ForceSimulation */; };
+		00C1D92C2E33411000414CA7 /* Grape in Frameworks */ = {isa = PBXBuildFile; productRef = 00C1D92B2E33411000414CA7 /* Grape */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		00C1D8FE2E333DE300414CA7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -52,6 +57,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				00C1D92C2E33411000414CA7 /* Grape in Frameworks */,
+				00C1D92A2E33411000414CA7 /* ForceSimulation in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -112,6 +119,8 @@
 			);
 			name = konwHow;
 			packageProductDependencies = (
+				00C1D9292E33411000414CA7 /* ForceSimulation */,
+				00C1D92B2E33411000414CA7 /* Grape */,
 			);
 			productName = konwHow;
 			productReference = 00C1D8F02E333DE100414CA7 /* konwHow.app */;
@@ -195,6 +204,9 @@
 			);
 			mainGroup = 00C1D8E72E333DE100414CA7;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				00C1D9282E33411000414CA7 /* XCRemoteSwiftPackageReference "Grape" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 00C1D8F12E333DE100414CA7 /* Products */;
 			projectDirPath = "";
@@ -558,6 +570,30 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		00C1D9282E33411000414CA7 /* XCRemoteSwiftPackageReference "Grape" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SwiftGraphs/Grape";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.1.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		00C1D9292E33411000414CA7 /* ForceSimulation */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 00C1D9282E33411000414CA7 /* XCRemoteSwiftPackageReference "Grape" */;
+			productName = ForceSimulation;
+		};
+		00C1D92B2E33411000414CA7 /* Grape */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 00C1D9282E33411000414CA7 /* XCRemoteSwiftPackageReference "Grape" */;
+			productName = Grape;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 00C1D8E82E333DE100414CA7 /* Project object */;
 }
