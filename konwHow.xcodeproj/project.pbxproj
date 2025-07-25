@@ -9,6 +9,10 @@
 /* Begin PBXBuildFile section */
 		00C1D92A2E33411000414CA7 /* ForceSimulation in Frameworks */ = {isa = PBXBuildFile; productRef = 00C1D9292E33411000414CA7 /* ForceSimulation */; };
 		00C1D92C2E33411000414CA7 /* Grape in Frameworks */ = {isa = PBXBuildFile; productRef = 00C1D92B2E33411000414CA7 /* Grape */; };
+		00C1D9602E3351D600414CA7 /* ForceSimulation in Frameworks */ = {isa = PBXBuildFile; productRef = 00C1D95F2E3351D600414CA7 /* ForceSimulation */; };
+		00C1D9622E3351D600414CA7 /* Grape in Frameworks */ = {isa = PBXBuildFile; productRef = 00C1D9612E3351D600414CA7 /* Grape */; };
+		00C1D9642E33520600414CA7 /* ForceSimulation in Frameworks */ = {isa = PBXBuildFile; productRef = 00C1D9632E33520600414CA7 /* ForceSimulation */; };
+		00C1D9662E33520600414CA7 /* Grape in Frameworks */ = {isa = PBXBuildFile; productRef = 00C1D9652E33520600414CA7 /* Grape */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -66,6 +70,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				00C1D9622E3351D600414CA7 /* Grape in Frameworks */,
+				00C1D9602E3351D600414CA7 /* ForceSimulation in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -73,6 +79,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				00C1D9662E33520600414CA7 /* Grape in Frameworks */,
+				00C1D9642E33520600414CA7 /* ForceSimulation in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -144,6 +152,8 @@
 			);
 			name = konwHowTests;
 			packageProductDependencies = (
+				00C1D95F2E3351D600414CA7 /* ForceSimulation */,
+				00C1D9612E3351D600414CA7 /* Grape */,
 			);
 			productName = konwHowTests;
 			productReference = 00C1D8FD2E333DE300414CA7 /* konwHowTests.xctest */;
@@ -167,6 +177,8 @@
 			);
 			name = konwHowUITests;
 			packageProductDependencies = (
+				00C1D9632E33520600414CA7 /* ForceSimulation */,
+				00C1D9652E33520600414CA7 /* Grape */,
 			);
 			productName = konwHowUITests;
 			productReference = 00C1D9072E333DE300414CA7 /* konwHowUITests.xctest */;
@@ -589,6 +601,26 @@
 			productName = ForceSimulation;
 		};
 		00C1D92B2E33411000414CA7 /* Grape */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 00C1D9282E33411000414CA7 /* XCRemoteSwiftPackageReference "Grape" */;
+			productName = Grape;
+		};
+		00C1D95F2E3351D600414CA7 /* ForceSimulation */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 00C1D9282E33411000414CA7 /* XCRemoteSwiftPackageReference "Grape" */;
+			productName = ForceSimulation;
+		};
+		00C1D9612E3351D600414CA7 /* Grape */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 00C1D9282E33411000414CA7 /* XCRemoteSwiftPackageReference "Grape" */;
+			productName = Grape;
+		};
+		00C1D9632E33520600414CA7 /* ForceSimulation */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 00C1D9282E33411000414CA7 /* XCRemoteSwiftPackageReference "Grape" */;
+			productName = ForceSimulation;
+		};
+		00C1D9652E33520600414CA7 /* Grape */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 00C1D9282E33411000414CA7 /* XCRemoteSwiftPackageReference "Grape" */;
 			productName = Grape;

@@ -29,7 +29,7 @@ struct TabBar: View {
             
             Spacer()
             
-            // 中央按钮 - 精确匹配设计图尺寸
+            // 中央按钮 - 减少偏移避免遮挡
             Button(action: {
                 // 中央按钮动作
             }) {
@@ -59,7 +59,7 @@ struct TabBar: View {
                     }
                 }
             }
-            .offset(y: -24)
+            .offset(y: -16) // 减少偏移量，从-24改为-16
             
             Spacer()
             

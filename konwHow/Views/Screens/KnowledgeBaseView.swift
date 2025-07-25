@@ -29,9 +29,13 @@ struct KnowledgeBaseView: View {
                 .padding(.top, 40)
                 .padding(.bottom, 20)
                 
-                // 内容区域 - 包括标签和卡片
+                // 内容区域 - 包括知识图谱、标签和卡片
                 ScrollView {
                     VStack(spacing: 16) {
+                        // 知识图谱组件（临时Canvas版本）
+                        CanvasKnowledgeGraphView()
+                            .frame(height: 250)
+                        
                         // #adx 标签 - 左对齐，与卡片同层级
                         HStack {
                             TagView(text: "#adx")
@@ -49,11 +53,10 @@ struct KnowledgeBaseView: View {
                         .padding(.horizontal, 20)
                     }
                     .padding(.top, 8)
+                    .padding(.bottom, 120) // 增加底部间距，避免Tab栏遮挡
                 }
                 
-                // 底部安全区域占位
-                Spacer()
-                    .frame(height: 100)
+                // 移除固定高度的Spacer，改用padding
             }
             
             // 侧边栏按钮 - 左上角

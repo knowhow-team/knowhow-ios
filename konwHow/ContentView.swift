@@ -16,7 +16,7 @@ struct ContentView: View {
             VStack(spacing: 0) {
                 // 根据选中的tab显示不同内容
                 if selectedTab == 0 {
-                    KnowledgeBaseView()
+                    KnowledgeBaseView(  )
                 } else {
                     CommunityView()
                 }
