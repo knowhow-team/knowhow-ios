@@ -42,8 +42,8 @@ struct KnowledgeBaseView: View {
                     // 内容区域 - 包括知识图谱、标签和卡片
                     ScrollView {
                         VStack(spacing: 16) {
-                            // 知识图谱组件（临时Canvas版本）
-                            CanvasKnowledgeGraphView()
+                            // 知识图谱组件（使用Grape实现）
+                            KnowledgeGraphView()
                                 .frame(height: 250)
                             
                             // #adx 标签 - 左对齐，与卡片同层级

@@ -13,6 +13,7 @@ struct RecordingView: View {
     @State private var recordingTime: TimeInterval = 0
     @State private var showSaveOptions = false
     @State private var timer: Timer?
+    @State private var audioLevels: [CGFloat] = Array(repeating: 0.1, count: 25) // 声纹数据
     
     var body: some View {
         ZStack {
@@ -34,14 +35,16 @@ struct RecordingView: View {
                 
                 // 主内容区域
                 VStack(spacing: 40) {
-                    // 录音网格区域
+                    // 录音网格区域 - 声纹动画
                     VStack(spacing: 20) {
-                        // 5x5网格小球
+                        // 5x5网格小球 - 根据声纹数据变化
                         LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 12), count: 5), spacing: 12) {
                             ForEach(0..<25) { index in
                                 Circle()
                                     .fill(getCircleColor(for: index))
                                     .frame(width: 40, height: 40)
+                                    .scaleEffect(audioLevels[index])
+                                    .animation(.easeInOut(duration: 0.1), value: audioLevels[index])
                             }
                         }
                         .padding(.horizontal, 40)
@@ -61,6 +64,7 @@ struct RecordingView: View {
                         
                         ScrollView {
                             VStack(spacing: 8) {
+                                // 只显示最新的识别文字
                                 Text(speechManager.transcribedText.isEmpty ? "正在聆听..." : speechManager.transcribedText)
                                     .font(.system(size: 16, weight: .regular))
                                     .foregroundColor(speechManager.transcribedText.isEmpty ? .gray : .black)
@@ -135,28 +139,6 @@ struct RecordingView: View {
                                     .background(Color(red: 0.2, green: 0.8, blue: 0.4))
                                     .cornerRadius(8)
                             }
-                        }
-                        
-                        // 调试按钮 - 手动触发录音
-                        Button(action: {
-                            print("调试按钮被点击")
-                            if speechManager.isAuthorized {
-                                speechManager.startRecording()
-                                // 开始计时器
-                                timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { _ in
-                                    recordingTime += 0.1
-                                }
-                            } else {
-                                print("权限未授权，无法开始录音")
-                            }
-                        }) {
-                            Text("调试：手动开始录音")
-                                .font(.system(size: 14, weight: .medium))
-                                .foregroundColor(.blue)
-                                .padding(.horizontal, 16)
-                                .padding(.vertical, 8)
-                                .background(Color.blue.opacity(0.1))
-                                .cornerRadius(6)
                         }
                         
                         // 保存/丢弃选项
@@ -240,6 +222,7 @@ struct RecordingView: View {
                 speechManager.requestSpeechAuthorization()
             }
             startRecording()
+            startAudioLevelSimulation()
         }
         .onChange(of: speechManager.isAuthorized) { newValue in
             print("权限状态变化: \(newValue)")
@@ -257,6 +240,7 @@ struct RecordingView: View {
         .onDisappear {
             print("RecordingView disappeared")
             stopRecording()
+            stopAudioLevelSimulation()
         }
     }
     
@@ -266,7 +250,10 @@ struct RecordingView: View {
         let threshold = Double(index) / 25.0
         
         if progress >= threshold {
-            return Color(red: 0.2, green: 0.8, blue: 0.4) // 绿色
+            // 根据声纹强度调整颜色
+            let intensity = audioLevels[index]
+            let greenIntensity = min(1.0, intensity)
+            return Color(red: 0.2, green: 0.8 * greenIntensity, blue: 0.4)
         } else {
             return Color.gray.opacity(0.3) // 浅灰色，与主页面风格一致
         }
@@ -301,6 +288,7 @@ struct RecordingView: View {
         print("停止录音...")
         speechManager.stopRecording()
         stopTimer()
+        stopAudioLevelSimulation()
         
         withAnimation(.easeInOut(duration: 0.3)) {
             showSaveOptions = true
@@ -311,6 +299,41 @@ struct RecordingView: View {
     private func stopTimer() {
         timer?.invalidate()
         timer = nil
+    }
+    
+    // 开始声纹模拟
+    private func startAudioLevelSimulation() {
+        Timer.scheduledTimer(withTimeInterval: 0.05, repeats: true) { _ in
+            if speechManager.isRecording {
+                // 模拟声纹数据变化 - 更真实的语音强度模拟
+                for i in 0..<audioLevels.count {
+                    let baseLevel: CGFloat = 0.6
+                    let variation: CGFloat = 0.5
+                    
+                    // 创建波浪效果，让相邻的圆圈有相关性
+                    let waveFactor = sin(Double(i) * 0.3 + recordingTime * 2.0)
+                    let randomFactor = CGFloat.random(in: 0...0.3)
+                    
+                    audioLevels[i] = baseLevel + variation * (CGFloat(waveFactor) + randomFactor)
+                    
+                    // 确保值在合理范围内
+                    audioLevels[i] = max(0.1, min(1.5, audioLevels[i]))
+                }
+            } else {
+                // 停止录音时，声纹回到基础状态
+                for i in 0..<audioLevels.count {
+                    audioLevels[i] = 0.1
+                }
+            }
+        }
+    }
+    
+    // 停止声纹模拟
+    private func stopAudioLevelSimulation() {
+        // 重置声纹数据
+        for i in 0..<audioLevels.count {
+            audioLevels[i] = 0.1
+        }
     }
     
     // 丢弃录音

@@ -137,6 +137,7 @@ class SpeechRecognitionManager: ObservableObject {
         recognitionTask = speechRecognizer?.recognitionTask(with: recognitionRequest) { result, error in
             if let result = result {
                 DispatchQueue.main.async {
+                    // 只保留最新的识别结果，不累积
                     self.transcribedText = result.bestTranscription.formattedString
                     print("识别结果: \(self.transcribedText)")
                 }
