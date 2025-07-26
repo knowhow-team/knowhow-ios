@@ -9,7 +9,7 @@ import SwiftUI
 
 struct KnowledgeBaseView: View {
     @State private var knowledgeItems: [KnowledgeItem] = []
-    @State private var showSidebar = false
+    @Binding var showSidebar: Bool // 接收外部传入的侧边栏状态
     
     var body: some View {
         ZStack {
@@ -28,31 +28,32 @@ struct KnowledgeBaseView: View {
                         startPoint: .top,
                         endPoint: .bottom
                     )
+                    .ignoresSafeArea(.all, edges: .top) // 确保渐变延伸到顶部安全区域
                     
                     // Cody logo - 显示在渐变区域内
                     Text("Cody")
-                        .font(.system(size: 42, weight: .black))
+                        .font(.system(size: 32, weight: .black))
                         .italic()
                         .foregroundColor(.black)
+                        .padding(.top, 0) // 增加顶部padding，避免与灵动岛重叠
                 }
-                .frame(height: 160) // 增加高度，扩展到灵动岛区域
+                .frame(height: 80) // 增加高度，确保有足够空间
                 
                 // 主内容区域 - 白色背景
                 VStack(spacing: 0) {
                     // 内容区域 - 包括知识图谱、标签和卡片
                     ScrollView {
                         VStack(spacing: 16) {
-                            // 知识图谱组件（使用Grape实现）
-                            KnowledgeGraphView()
-                                .frame(height: 250)
-                            
-                            // #adx 标签 - 左对齐，与卡片同层级
-                            HStack {
-                                TagView(text: "#adx")
+                            // 知识图谱组件（使用Grape实现）- 带有左上角标签
+                            ZStack(alignment: .topLeading) {
+                                KnowledgeGraphView()
+                                    .frame(height: 250)
                                 
-                                Spacer()
+                                // #adx 标签 - 放在知识图谱左上角
+                                TagView(text: "#adx")
+                                    .padding(.top, 16)
+                                    .padding(.leading, 20)
                             }
-                            .padding(.horizontal, 20)
                             
                             // 卡片列表
                             LazyVStack(spacing: 8) {
@@ -80,7 +81,7 @@ struct KnowledgeBaseView: View {
                         }
                     })
                     .padding(.leading, 20)
-                    .padding(.top, 60)
+                    .padding(.top, 20)
                     
                     Spacer()
                 }
@@ -90,15 +91,6 @@ struct KnowledgeBaseView: View {
         .onAppear {
             loadKnowledgeItems()
         }
-        .overlay(
-            // 侧边栏覆盖层
-            Group {
-                if showSidebar {
-                    SidebarView(isPresented: $showSidebar)
-                        .zIndex(1)
-                }
-            }
-        )
     }
     
     private func loadKnowledgeItems() {
@@ -129,5 +121,5 @@ struct KnowledgeBaseView: View {
 }
 
 #Preview {
-    KnowledgeBaseView()
+    KnowledgeBaseView(showSidebar: .constant(false))
 } 

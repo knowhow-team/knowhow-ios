@@ -38,7 +38,7 @@ struct TabBar: View {
                     Circle()
                         .fill(Color(red: 0.2, green: 0.8, blue: 0.4))
                         .frame(width: 64, height: 64)
-                        .shadow(color: Color.black.opacity(0.2), radius: 10, x: 0, y: 6)
+                        .shadow(color: Color.black.opacity(0.15), radius: 8, x: 0, y: 3) // 更轻微的阴影
                     
                     // 使用垂直线条图标来模拟音频波形 - 精确匹配设计图
                     HStack(spacing: 2.5) {
@@ -79,10 +79,9 @@ struct TabBar: View {
                 }
             }
         }
-        .padding(.horizontal, 50)
-        .padding(.vertical, 12)
-        .background(Color.white)
-        .shadow(color: Color.black.opacity(0.1), radius: 8, x: 0, y: -2)
+        .padding(.horizontal, 75) // 进一步减少水平边距，让tab更靠近中心
+        .padding(.vertical, 0) // 恢复合适的垂直padding
+        .background(Color.white) // 使用纯白色背景，无任何边框效果
         .fullScreenCover(isPresented: $showRecording) {
             RecordingView()
         }

@@ -16,9 +16,9 @@ struct SidebarButton: View {
                 .font(.system(size: 22, weight: .medium))
                 .foregroundColor(.black)
                 .frame(width: 44, height: 44)
-                .background(Color.white.opacity(0.8))
+                .background(Color.clear) // 透明背景
                 .cornerRadius(10)
-                .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2)
+                // 移除阴影，实现完全透明效果
         }
     }
 }

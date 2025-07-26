@@ -17,16 +17,7 @@ struct CommunityView: View {
                 .ignoresSafeArea()
             
             VStack(spacing: 0) {
-                // 顶部区域 - 包含Cody标题
-                VStack(spacing: 8) {
-                    // Cody 标题
-                    Text("Cody")
-                        .font(.system(size: 42, weight: .black))
-                        .italic()
-                        .foregroundColor(.black)
-                }
-                .padding(.top, 40)
-                .padding(.bottom, 20)
+               
                 
                 // 主内容区域
                 ScrollView {
