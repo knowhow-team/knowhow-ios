@@ -8,6 +8,7 @@
 //
 
 import SwiftUI
+import Foundation
 
 // MARK: - SiriWaveView (音频可视化核心)
 
@@ -99,31 +100,54 @@ struct SiriWaveView: View {
 struct RecordingView: View {
     @Environment(\.dismiss) private var dismiss
     @StateObject private var speechManager = SpeechRecognitionManager()
+    @StateObject private var apiClient: APIClient
+    @StateObject private var userManager = UserManager.shared
     
     @State private var recordingTime: TimeInterval = 0
     @State private var showSaveOptions = false
     @State private var timer: Timer?
     @State private var showLanguageSelector = false
     @State private var isPaused = false
+    @State private var isSaving = false // 保存状态
+    
+    
+    init() {
+        let config = APIConfig(
+            baseURL: "http://***REMOVED***/api",
+            userID: UserManager.shared.userId,
+            timeout: 30.0
+        )
+        self._apiClient = StateObject(wrappedValue: APIClient(config: config))
+    }
     
     var body: some View {
         ZStack {
             Color.white.ignoresSafeArea()
             
-            VStack(spacing: 20) {
+            VStack(spacing: 0) {
+                // 顶部留空间
+                Spacer()
+                    .frame(height: 60)
+                
                 headerView
                 
+                Spacer()
+                
+                // 可视化区域完全垂直居中
                 visualizationArea
                 
+                Spacer()
+                
+                // 转文字区域移到更下方
                 transcriptionArea
+                    .padding(.bottom, 20)
                 
                 controlsArea
-                
-                Spacer()
             }
             .padding(.bottom, 20)
             
             backButton
+            
         }
         .onAppear(perform: setupView)
         .onDisappear(perform: cleanupView)
@@ -160,35 +184,12 @@ struct RecordingView: View {
     }
     
     private var visualizationArea: some View {
-        ZStack {
-            // 背景
-            RoundedRectangle(cornerRadius: 20)
-                .fill(LinearGradient(colors: [Color(red: 0.98, green: 0.99, blue: 1.0), Color(red: 0.95, green: 0.97, blue: 0.99)], startPoint: .top, endPoint: .bottom))
-                .overlay(RoundedRectangle(cornerRadius: 20).stroke(Color.blue.opacity(0.1), lineWidth: 1))
-
-            // 实时音频可视化
-            SiriWaveView(power: CGFloat(speechManager.audioLevel))
-                .padding(.horizontal, 20)
-            
-            // 中心麦克风图标
-            Image(systemName: speechManager.isRecording ? "waveform" : "mic.fill")
-                .font(.system(size: 32, weight: .medium))
-                .foregroundColor(.white)
-                .frame(width: 80, height: 80)
-                .background(
-                    Circle().fill(
-                        LinearGradient(
-                            colors: speechManager.isRecording ? [.blue, .purple] : [.gray.opacity(0.6), .gray.opacity(0.4)],
-                            startPoint: .topLeading, endPoint: .bottomTrailing
-                        )
-                    )
-                )
-                // 动画与录音状态和音量挂钩
-                .scaleEffect(speechManager.isRecording ? 1.1 + CGFloat(speechManager.audioLevel) * 0.2 : 1.0)
-                .animation(.spring(response: 0.3, dampingFraction: 0.6), value: speechManager.isRecording)
-                .animation(.spring(response: 0.2, dampingFraction: 0.5), value: speechManager.audioLevel)
-        }
-        .frame(height: 180)
+        // Dot Matrix 可视化区域 - 纯净显示，无中心按钮
+        DotMatrixVisualizer(
+            power: CGFloat(speechManager.audioLevel), 
+            isRecording: speechManager.isRecording,
+            isPaused: isPaused
+        )
         .padding(.horizontal, 20)
     }
     
@@ -284,8 +285,14 @@ struct RecordingView: View {
             // 丢弃按钮
             optionButton(icon: "xmark", text: "丢弃", color: .red, action: discardRecording)
             // 保存按钮
-            optionButton(icon: "checkmark", text: "保存", color: .green, action: saveRecording)
-                .disabled(speechManager.transcribedText.isEmpty)
+            optionButton(
+                icon: "checkmark", 
+                text: "保存", 
+                color: .green, 
+                action: saveRecording,
+                isLoading: isSaving
+            )
+            .disabled(speechManager.transcribedText.isEmpty || isSaving)
         }
         .transition(.opacity.combined(with: .scale))
     }
@@ -322,11 +329,28 @@ struct RecordingView: View {
         }
     }
     
-    private func optionButton(icon: String, text: String, color: Color, action: @escaping () -> Void) -> some View {
+    private func optionButton(icon: String, text: String, color: Color, action: @escaping () -> Void, isLoading: Bool = false) -> some View {
         Button(action: action) {
             VStack(spacing: 8) {
-                controlButton(icon: icon, color: color, size: 50, action: {})
-                    .disabled(true) // 让父按钮接管事件
+                Button(action: {}) {
+                    ZStack {
+                        if isLoading {
+                            ProgressView()
+                                .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                .scaleEffect(1.2)
+                        } else {
+                            Image(systemName: icon)
+                                .font(.system(size: 50 * 0.4, weight: .bold))
+                                .foregroundColor(.white)
+                        }
+                    }
+                    .frame(width: 50, height: 50)
+                    .background(LinearGradient(colors: [color, color.opacity(0.7)], startPoint: .top, endPoint: .bottom))
+                    .clipShape(Circle())
+                    .shadow(color: color.opacity(0.4), radius: 8, y: 4)
+                }
+                .disabled(true) // 让父按钮接管事件
+                
                 Text(text).font(.system(size: 14, weight: .medium)).foregroundColor(.black)
             }
         }
@@ -390,8 +414,11 @@ struct RecordingView: View {
     }
     
     private func saveRecording() {
-        print("保存的文本: \(speechManager.transcribedText)")
-        dismiss()
+        guard !speechManager.transcribedText.isEmpty else { return }
+        
+        Task {
+            await submitTextRecord()
+        }
     }
     
     private func startTimer() {
@@ -441,6 +468,47 @@ struct RecordingView: View {
         let seconds = Int(timeInterval) % 60
         return String(format: "%02d:%02d", minutes, seconds)
     }
+    
+    // MARK: - API Methods
+    
+    @MainActor
+    private func submitTextRecord() async {
+        isSaving = true
+        
+        let request = TextRecordRequest(
+            userId: Int(userManager.userId) ?? 1,
+            text: speechManager.transcribedText
+        )
+        
+        let response = await apiClient.post(
+            endpoint: "v1/articles/text-record",
+            body: request,
+            responseType: TextRecordResponse.self
+        )
+        
+        isSaving = false
+        
+        if response.isSuccess, let data = response.data {
+            print("✅ 文本记录提交成功，任务ID: \(data.taskId)")
+            
+            // 立即返回主界面，在主界面显示处理状态
+            dismiss()
+            
+            // 通知主界面开始轮询任务状态
+            NotificationCenter.default.post(
+                name: NSNotification.Name("StartTaskPolling"),
+                object: nil,
+                userInfo: [
+                    "taskId": data.taskId,
+                    "title": data.title
+                ]
+            )
+        } else if let error = response.error {
+            print("❌ 文本记录提交失败: \(error.localizedDescription)")
+            // TODO: 显示错误提示
+        }
+    }
+    
 }
 
 // MARK: - Preview

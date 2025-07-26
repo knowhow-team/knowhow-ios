@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-konwHow is a SwiftUI-based iOS knowledge base application that allows users to browse and manage knowledge items. The app features a tab-based interface with knowledge base and community sections, plus voice recording capabilities for capturing knowledge.
+konwHow is a SwiftUI-based iOS knowledge base application that allows users to browse and manage knowledge items. The app features a tab-based interface with knowledge base and community sections, plus voice recording capabilities with speech recognition for capturing knowledge.
 
 ## Build and Development Commands
 
@@ -27,18 +27,19 @@ konwHow/
 ├── ContentView.swift          # Root view with tab management
 ├── GrapeTest.swift            # Grape visualization testing (currently disabled)
 ├── Models/
-│   └── KnowledgeItem.swift    # Data model for knowledge items
+│   ├── KnowledgeItem.swift           # Data model for knowledge items
+│   └── SpeechRecognitionManager.swift # Speech-to-text functionality
 └── Views/
     ├── Components/
     │   ├── KnowledgeCard.swift      # Reusable card component
-    │   ├── KnowledgeGraphView.swift # Canvas-based graph visualization
+    │   ├── KnowledgeGraphView.swift # Grape-based graph visualization
     │   ├── SidebarButton.swift      # Hamburger menu button
     │   ├── TabBar.swift            # Custom tab bar with center button
     │   └── TagView.swift           # Tag display component
     └── Screens/
         ├── CommunityView.swift     # Placeholder community view
         ├── KnowledgeBaseView.swift # Main knowledge display
-        ├── RecordingView.swift     # Voice recording interface
+        ├── RecordingView.swift     # Voice recording with visualization
         ├── SidebarView.swift       # Navigation sidebar
         └── VoiceRecordView.swift   # Voice record history
 ```
@@ -51,11 +52,13 @@ konwHow/
 
 **KnowledgeBaseView** (`KnowledgeBaseView.swift:10`): Main screen displaying "Cody" branding, sidebar navigation, and scrollable list of knowledge cards. Contains hardcoded sample data for AdventureX hackathon.
 
-**RecordingView** (`RecordingView.swift:10`): Full-screen voice recording interface with 5x5 grid visualization, timer display, and save/discard options. Features animated progress indicators.
+**RecordingView** (`RecordingView.swift:10`): Full-screen voice recording interface with custom SiriWaveView audio visualization using animated sine waves. Integrates with SpeechRecognitionManager for real-time speech-to-text transcription and audio level monitoring.
 
 **SidebarView** (`SidebarView.swift:10`): Navigation sidebar with links to voice records and tag management. Slides in from the left edge.
 
-**KnowledgeGraphView** (`KnowledgeGraphView.swift:56`): Canvas-based knowledge graph visualization showing nodes and connections. Currently uses fixed positioning rather than Grape library.
+**KnowledgeGraphView** (`KnowledgeGraphView.swift:5`): Interactive knowledge graph visualization using Grape library with ForceDirectedGraph for node positioning and physics simulation. Features draggable nodes with collision detection.
+
+**SpeechRecognitionManager** (`SpeechRecognitionManager.swift:13`): ObservableObject handling speech-to-text functionality with multi-language support (Chinese, English), real-time audio level monitoring, and AVFoundation integration.
 
 **KnowledgeItem** (`KnowledgeItem.swift:10`): Simple data model with id, title, description, and category properties.
 
@@ -69,13 +72,16 @@ The app uses a multi-layered navigation system:
 ### Voice Recording Flow
 1. User taps center button in TabBar
 2. RecordingView presents full-screen with immediate recording start
-3. Visual feedback through 5x5 grid that fills based on recording time
-4. Stop recording reveals save/discard options
-5. Save returns to main view; discard cancels the recording
+3. SpeechRecognitionManager begins audio capture and speech recognition
+4. Real-time visual feedback through animated sine wave visualization
+5. Transcribed text updates live as user speaks
+6. Stop recording reveals save/discard options with final transcription
+7. Save returns to main view; discard cancels the recording
 
 ### Dependencies
-- **Grape**: SwiftUI graph visualization library (version 1.1.0) - includes ForceSimulation component
-- Currently disabled in code due to implementation issues
+- **Grape**: SwiftUI graph visualization library (version 1.1.0) - includes ForceSimulation component for physics-based graph layouts
+- **Speech**: iOS Speech framework for speech recognition capabilities
+- **AVFoundation**: Audio recording, playback, and real-time audio level monitoring
 - Uses Swift Package Manager for dependency management
 
 ### Design System
@@ -97,6 +103,8 @@ The app uses a multi-layered navigation system:
 - All Swift files include standard header comments with creation date
 - Implements SwiftUI previews for all components
 - Custom animations with `withAnimation(.easeInOut(duration: 0.2-0.3))`
-- Grape library integration is commented out but structure remains for future implementation
-- Canvas is used for custom drawing in KnowledgeGraphView
-- Custom shape extensions for partial corner radius support
+- Grape library actively used for ForceDirectedGraph visualization with physics simulation
+- Custom Shape implementations for audio visualization (SineWave in RecordingView)
+- ObservableObject pattern for state management (SpeechRecognitionManager)
+- Multi-language support for speech recognition (Chinese simplified/traditional, English)
+- Real-time audio processing with published audio level updates

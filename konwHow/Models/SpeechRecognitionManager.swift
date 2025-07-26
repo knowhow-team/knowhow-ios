@@ -209,7 +209,7 @@ class SpeechRecognitionManager: NSObject, ObservableObject {
         }
         
         // 可选：提供上下文信息以提高特定词汇的识别准确率
-        // recognitionRequest.contextualStrings = ["Cody", "konwHow"]
+         recognitionRequest.contextualStrings = ["Adventure X", "konwHow"]
         
         let inputNode = audioEngine.inputNode
         let recordingFormat = inputNode.outputFormat(forBus: 0)

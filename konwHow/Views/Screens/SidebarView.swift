@@ -9,7 +9,9 @@ import SwiftUI
 
 struct SidebarView: View {
     @Binding var isPresented: Bool
-    @State private var showVoiceRecord = false
+    @State private var showVoiceRecord = false 
+    @State private var showUserDebug = false
+    @EnvironmentObject var userManager: UserManager
     
     var body: some View {
         ZStack {
@@ -72,6 +74,33 @@ struct SidebarView: View {
                     .buttonStyle(PlainButtonStyle())
                     .padding(.horizontal, 20)
                     
+                    Spacer().frame(height: 16)
+                    
+                    // 用户调试信息按钮
+                    Button(action: {
+                        showUserDebug.toggle()
+                    }) {
+                        HStack(spacing: 16) {
+                            Text("用户调试")
+                                .font(.system(size: 15, weight: .medium))
+                                .foregroundColor(.black.opacity(0.8))
+                            
+                            Spacer()
+                            
+                            Text("ID: \(userManager.userId)")
+                                .font(.system(size: 12))
+                                .foregroundColor(.black.opacity(0.6))
+                        }
+                        .padding(.vertical, 12)
+                        .padding(.horizontal, 24)
+                        .background(
+                            RoundedRectangle(cornerRadius: 8)
+                                .fill(Color.white.opacity(0.4))
+                        )
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                    .padding(.horizontal, 20)
+                    
                     Spacer().frame(height: 32)
                     
                     // 标签分组
@@ -117,6 +146,23 @@ struct SidebarView: View {
         .fullScreenCover(isPresented: $showVoiceRecord) {
             VoiceRecordView()
         }
+        .sheet(isPresented: $showUserDebug) {
+            NavigationView {
+                ScrollView {
+                    UserDebugView()
+                        .padding()
+                }
+                .navigationTitle("用户管理")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        Button("完成") {
+                            showUserDebug = false
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -139,4 +185,5 @@ struct RoundedCorner: Shape {
 
 #Preview {
     SidebarView(isPresented: .constant(true))
+        .environmentObject(UserManager.shared)
 } 
