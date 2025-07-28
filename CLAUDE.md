@@ -50,7 +50,7 @@ konwHow/
 
 **TabBar** (`TabBar.swift:10`): Custom bottom navigation with two tabs (知识库/社区) and a center action button that triggers recording functionality. Uses binding for tab state management.
 
-**KnowledgeBaseView** (`KnowledgeBaseView.swift:10`): Main screen displaying "Cody" branding, sidebar navigation, and scrollable list of knowledge cards. Contains hardcoded sample data for AdventureX hackathon.
+**KnowledgeBaseView** (`KnowledgeBaseView.swift:10`): Main screen displaying "KnowHow" branding, sidebar navigation, and scrollable list of knowledge cards. Contains hardcoded sample data for AdventureX hackathon.
 
 **RecordingView** (`RecordingView.swift:10`): Full-screen voice recording interface with custom SiriWaveView audio visualization using animated sine waves. Integrates with SpeechRecognitionManager for real-time speech-to-text transcription and audio level monitoring.
 
